@@ -5,7 +5,7 @@ The shield is designed to allow addressing through PD2, PD3 and either PD4 or PD
 selectable on the shield.  This program uses PD2, PD3 and PD4.  Note the value of 
 DDRB and PortD.
 David Edmunds 
-last edit 4th July 2015
+edit 2nd September 2015, bug fix to stop overwriting PD5 on last address update in EGT loop
 */
 
 #include "SPI.h"
@@ -109,7 +109,9 @@ void loop(void) {
        EGT[2][i] = calcTemp(gettemp());   //get the A/D value and convert to degrees C
        if (EGT[2][i] > (EGT[2][maxEGT]+1))   //find the highest EGT and allow a little hystersis
           maxEGT = i;
-       PORTD = PORTD + 4;  //set address for the multiplexer
+       
+       if (i < 4)   
+         PORTD = PORTD + 4;  //set address for the multiplexer, and don't overwrite PD5 on last pass through this loop
      }
    // and display it, with the maximum EGT shown in red
 
